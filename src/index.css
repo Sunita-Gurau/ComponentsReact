@@ -1,3 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-barbie-primary: #FF69B4;
+  --color-barbie-secondary: #FFD1DC;
+  --color-barbie-accent: #FFF200;
+  --color-barbie-background: #FFF0F6;
+  --color-barbie-text: #231F20;
+  --color-barbie-white: #FFFFFF;
+}
