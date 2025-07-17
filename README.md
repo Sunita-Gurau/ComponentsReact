@@ -1,4 +1,4 @@
-# SunitaPortfolio
+# react-components-learning
 
 This project is for learning React by making reusable components, styling them with Tailwind CSS, and writing tests using Vitest.
 
