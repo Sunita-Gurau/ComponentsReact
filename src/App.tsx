@@ -3,6 +3,7 @@ import Card from "./components/Card";
 import ProgressBar from "./components/ProgressBar";
 import DropdownDemo from "./components/DropdownDemo";
 import SearchDemo from "./components/SearchDemo";
+import ButtonDemo from "./components/ButtonDemo";
 
 const cardData = [
   {
@@ -120,6 +121,9 @@ export default function App() {
         {/* Search Demo Section */}
         <div className="mt-12">
           <SearchDemo />
+        </div>
+        <div className="mt-12">
+          <ButtonDemo />
         </div>
       </div>
     </div>
