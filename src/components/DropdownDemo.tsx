@@ -14,10 +14,13 @@ interface StatusOption {
 
 const DropdownDemo: React.FC = () => {
   // State for the first dropdown (Categories - simple)
-  const [categoryValue, setCategoryValue] = useState('all');
+  const [categoryValue, setCategoryValue] = useState<CategoryOption | undefined>(undefined);
   
   // State for the second dropdown (Status - with counts)
-  const [statusValue, setStatusValue] = useState('running');
+  const [statusValue, setStatusValue] = useState<StatusOption | undefined>(undefined);
+
+  // State for the multi-select dropdown (Categories)
+  const [multiCategoryValue, setMultiCategoryValue] = useState<CategoryOption[]>([]);
 
   // Options for Categories dropdown (simple)
   const categoryOptions: CategoryOption[] = [
@@ -51,7 +54,7 @@ const DropdownDemo: React.FC = () => {
             label="Categories"
             options={categoryOptions}
             value={categoryValue}
-            onChange={setCategoryValue}
+            onChange={option => setCategoryValue(option as CategoryOption)}
             getLabel={option => option.name}
             getValue={option => option.id}
             placeholder="All"
@@ -61,6 +64,25 @@ const DropdownDemo: React.FC = () => {
           />
         </div>
 
+        {/* Simple dropdown with multiSelect */}
+        <div className="space-y-4">
+          <p className="text-gray-600">Simple dropdown with multiSelect (with label)</p>
+          <Dropdown<CategoryOption>
+            label="Categories (multi-select)"
+            options={categoryOptions}
+            value={multiCategoryValue}
+            onChange={value => setMultiCategoryValue(Array.isArray(value) ? value as CategoryOption[] : [])}
+            getLabel={option => option.name}
+            getValue={option => option.id}
+            placeholder="Select categories"
+            showIcon={true}
+            showCounts={false}
+            variant="simple"
+            multiSelect={true}
+          />
+          <div className="text-xs text-gray-500">Selected: {multiCategoryValue.length > 0 ? JSON.stringify(multiCategoryValue.map(o => o.name)) : 'None'}</div>
+        </div>
+
         {/* Header-style dropdown with icon before label and counts */}
         <div className="space-y-4">
           <p className="text-gray-600">Header-style dropdown with icon before label and counts</p>
@@ -68,7 +90,7 @@ const DropdownDemo: React.FC = () => {
             label="Status"
             options={statusOptions}
             value={statusValue}
-            onChange={setStatusValue}
+            onChange={option => setStatusValue(option as StatusOption)}
             getLabel={option => option.label}
             getValue={option => option.key}
             getCount={option => option.count}
@@ -86,7 +108,7 @@ const DropdownDemo: React.FC = () => {
             label="Status"
             options={statusOptions}
             value={statusValue}
-            onChange={setStatusValue}
+            onChange={option => setStatusValue(option as StatusOption)}
             getLabel={option => option.label}
             getValue={option => option.key}
             getCount={option => option.count}
@@ -104,7 +126,7 @@ const DropdownDemo: React.FC = () => {
             label="Categories (searchable)"
             options={categoryOptions}
             value={categoryValue}
-            onChange={setCategoryValue}
+            onChange={option => setCategoryValue(option as CategoryOption)}
             getLabel={option => option.name}
             getValue={option => option.id}
             placeholder="All"

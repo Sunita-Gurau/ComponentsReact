@@ -3,7 +3,13 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import Dropdown from './Dropdown';
-import type { DropdownOption } from './Dropdown';
+import { useState } from 'react';
+
+type DropdownOption = {
+  value: string;
+  label: string;
+  count?: number;
+};
 
 const mockOptions: DropdownOption[] = [
   { value: 'option1', label: 'Option 1' },
@@ -13,12 +19,35 @@ const mockOptions: DropdownOption[] = [
 
 const defaultProps = {
   options: mockOptions,
-  value: 'option1',
+  value: mockOptions[0],
   onChange: vi.fn(),
   getLabel: (option: DropdownOption) => option.label,
   getValue: (option: DropdownOption) => option.value,
   getCount: (option: DropdownOption) => option.count,
 };
+
+const multiSelectProps = {
+  options: mockOptions,
+  value: [mockOptions[0], mockOptions[2]],
+  onChange: vi.fn(),
+  getLabel: (option: DropdownOption) => option.label,
+  getValue: (option: DropdownOption) => option.value,
+  getCount: (option: DropdownOption) => option.count,
+  multiSelect: true,
+  variant: 'simple',
+};
+
+// Helper wrapper for multiSelect stateful testing
+function MultiSelectWrapper(props: any) {
+  const [value, setValue] = useState<any[]>(props.value || []);
+  return <Dropdown {...props} value={value} onChange={setValue} />;
+}
+
+// Helper to get the dropdown option button by name (only in open dropdown)
+function getDropdownOptionButton(name: string) {
+  const optionButtons = screen.getAllByRole('button', { name });
+  return optionButtons.find(btn => btn.closest('[aria-hidden="false"]'));
+}
 
 describe('Dropdown', () => {
   beforeEach(() => {
@@ -42,7 +71,7 @@ describe('Dropdown', () => {
   });
 
   it('displays placeholder when no option is selected', () => {
-    render(<Dropdown {...defaultProps} value="" placeholder="Select option" />);
+    render(<Dropdown {...defaultProps} value={undefined} placeholder="Select option" />);
     expect(screen.getByText('Select option')).toBeInTheDocument();
   });
 
@@ -68,7 +97,7 @@ describe('Dropdown', () => {
     const option2 = screen.getByText('Option 2');
     await user.click(option2);
     
-    expect(onChange).toHaveBeenCalledWith('option2');
+    expect(onChange).toHaveBeenCalledWith(mockOptions[1]);
   });
 
   it('closes dropdown when option is selected', async () => {
@@ -174,5 +203,65 @@ describe('Dropdown', () => {
     const options = screen.getAllByText('Option 1');
     // The first is the button, the second is the dropdown option
     expect(options[1].closest('button')).toHaveClass('bg-[#F1F5F9]');
+  });
+});
+
+describe('Dropdown (multiSelect)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders selected options as chips with gray background', () => {
+    render(<Dropdown {...multiSelectProps} />);
+    // Should render two chips
+    const chips = screen.getAllByText(/Option/).filter(el => el.className.includes('bg-gray-200'));
+    expect(chips.length).toBe(2);
+    expect(chips[0]).toHaveTextContent('Option 1');
+    expect(chips[1]).toHaveTextContent('Option 3');
+  });
+
+  it('allows selecting and deselecting multiple options', async () => {
+    const user = userEvent.setup();
+    render(<MultiSelectWrapper {...multiSelectProps} value={[]} />);
+    
+    // Open dropdown and select Option 1
+    let button = screen.getByTestId('dropdown-toggle');
+    await user.click(button);
+    
+    // Find Option 1 in the dropdown and click it (get the one in the dropdown, not the chip)
+    const option1Buttons = screen.getAllByText('Option 1');
+    const option1DropdownButton = option1Buttons.find(el => el.closest('[aria-hidden="false"]'))?.closest('button');
+    expect(option1DropdownButton).toBeInTheDocument();
+    await user.click(option1DropdownButton!);
+    
+    // Option 1 chip should appear
+    expect(screen.getAllByText('Option 1').some(el => el.className.includes('bg-gray-200'))).toBe(true);
+    
+    // Select Option 2 (dropdown should still be open in multi-select mode)
+    const option2Buttons = screen.getAllByText('Option 2');
+    const option2DropdownButton = option2Buttons.find(el => el.closest('[aria-hidden="false"]'))?.closest('button');
+    expect(option2DropdownButton).toBeInTheDocument();
+    await user.click(option2DropdownButton!);
+    
+    expect(screen.getAllByText('Option 2').some(el => el.className.includes('bg-gray-200'))).toBe(true);
+    
+    // Deselect Option 1 (dropdown should still be open)
+    const option1ButtonsAgain = screen.getAllByText('Option 1');
+    const option1DropdownButtonAgain = option1ButtonsAgain.find(el => el.closest('[aria-hidden="false"]'))?.closest('button');
+    expect(option1DropdownButtonAgain).toBeInTheDocument();
+    await user.click(option1DropdownButtonAgain!);
+    
+    // Option 1 chip should be gone, Option 2 chip should remain
+    expect(screen.queryAllByText('Option 1').some(el => el.className.includes('bg-gray-200'))).toBe(false);
+    expect(screen.getAllByText('Option 2').some(el => el.className.includes('bg-gray-200'))).toBe(true);
+  });
+
+  it('does not render checkboxes in the dropdown list', async () => {
+    const user = userEvent.setup();
+    render(<Dropdown {...multiSelectProps} />);
+    const button = screen.getByRole('button');
+    await user.click(button);
+    // Should not find any checkbox
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 });
