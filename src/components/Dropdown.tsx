@@ -87,8 +87,9 @@ function Dropdown<T>({
     };
   }, []);
 
-  const handleOptionClick = (optionValue: unknown) => {
-    onChange(optionValue as T);
+  // Update handleOptionClick to accept the full option object
+  const handleOptionClick = (option: T) => {
+    onChange(option);
     setIsOpen(false);
     setSearch(''); 
   };
@@ -133,7 +134,7 @@ function Dropdown<T>({
               h-[30px]
               px-4
               min-w-[150px]
-              ${variant === "filter" ? "border border-[#DCDCDC]" : ""}
+              border border-[#DCDCDC] focus:border-blue-600 focus:outline-none
               ${
                 disabled
                   ? "bg-gray-50 text-gray-400 cursor-not-allowed"
@@ -175,12 +176,12 @@ function Dropdown<T>({
               <div className="px-3 py-2 text-gray-400 text-sm">No results found</div>
             )}
             {(openDirection === 'up' ? [...(searchable ? filteredOptions : options)].slice().reverse() : (searchable ? filteredOptions : options)).map((option) => {
-              const selected = getValue(option) === value;
+              const selected = value !== undefined && !Array.isArray(value) && getValue(option) === getValue(value as T);
               return (
                 <button
                   key={String(getValue(option))}
                   type="button"
-                  onClick={() => handleOptionClick(getValue(option))}
+                  onClick={() => handleOptionClick(option)}
                   className={`
                     w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none
                     ${
@@ -230,10 +231,11 @@ function Dropdown<T>({
             className={`
               w-full text-left bg-white border border-gray-300 rounded-md
               px-3 py-2
+              focus:border-blue-600 focus:outline-none
               ${
                 disabled
                   ? "bg-gray-50 text-gray-400 cursor-not-allowed"
-                  : "hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                  : "hover:border-gray-400 cursor-pointer"
               }
               transition-colors duration-200
             `}
@@ -296,7 +298,7 @@ function Dropdown<T>({
                   type="text"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="w-full px-2 py-1 border border-gray-200 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  className="w-full px-2 py-1 border border-gray-200 rounded text-sm focus:outline-none focus:border-blue-600"
                   placeholder="Search..."
                   autoFocus
                 />
@@ -351,24 +353,14 @@ function Dropdown<T>({
                 </button>
               );
             })}
-            {multiSelect && (
-              <div className="flex justify-end p-2 border-t border-gray-200 bg-white sticky bottom-0 z-10">
-                <button
-                  type="button"
-                  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Done
-                </button>
-              </div>
-            )}
+        
             {openDirection === 'up' && searchable && (
               <div className="p-2 border-t border-gray-200 bg-white sticky bottom-0 z-10">
                 <input
                   type="text"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="w-full px-2 py-1 border border-gray-200 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  className="w-full px-2 py-1 border border-gray-200 rounded text-sm focus:outline-none focus:border-blue-600"
                   placeholder="Search..."
                   autoFocus
                 />
