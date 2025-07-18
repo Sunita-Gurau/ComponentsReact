@@ -133,6 +133,7 @@ export const MultiSelect: Story = {
     getLabel: (option: any) => option.name,
     getValue: (option: any) => option.id,
     multiSelect: true,
+    variant: 'simple',
     placeholder: 'Select multiple options',
   },
 };

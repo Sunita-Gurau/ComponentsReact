@@ -95,6 +95,40 @@ function Dropdown<T>({
   };
 
   if (variant === "filter-with-icon" || variant === "filter") {
+    // Remove border only for filter-with-icon variant
+    const buttonClass = `
+      text-left
+      rounded-[3px]
+      bg-[#FDFDFD]
+      h-[30px]
+      px-4
+      min-w-[150px]
+      ${
+        variant === 'filter-with-icon'
+          ? ''
+          : 'border border-[#DCDCDC] focus:border-blue-600' // border for filter variant only
+      }
+      ${
+        disabled
+          ? "bg-gray-50 text-gray-400 cursor-not-allowed"
+          : variant === 'filter-with-icon'
+            ? "cursor-pointer"
+            : "hover:border-gray-300 cursor-pointer"
+      }
+      focus:outline-none
+      transition-colors duration-200
+    `;
+    const dropdownClass = `
+      absolute left-0 z-10 bg-white rounded-lg shadow-lg max-h-60 overflow-auto min-w-[220px]
+      ${
+        variant === 'filter-with-icon'
+          ? ''
+          : 'border border-gray-200' // border for filter variant only
+      }
+      transition-all duration-200 ease-in-out origin-top
+      ${openDirection === 'up' ? 'bottom-full mb-1' : 'top-full mt-1'}
+      ${isOpen ? "opacity-100 scale-y-100 pointer-events-auto" : "opacity-0 scale-y-95 pointer-events-none"}
+    `;
     return (
       <div className={`flex items-center gap-2 ${className}`} ref={dropdownRef}>
         {variant === "filter-with-icon" && (
@@ -127,21 +161,7 @@ function Dropdown<T>({
             type="button"
             onClick={() => !disabled && setIsOpen(!isOpen)}
             disabled={disabled}
-            className={`
-              text-left
-              rounded-[3px]
-              bg-[#FDFDFD]
-              h-[30px]
-              px-4
-              min-w-[150px]
-              border border-[#DCDCDC] focus:border-blue-600 focus:outline-none
-              ${
-                disabled
-                  ? "bg-gray-50 text-gray-400 cursor-not-allowed"
-                  : "hover:border-gray-300 cursor-pointer"
-              }
-              transition-colors duration-200
-            `}
+            className={buttonClass}
           >
             <div className="flex items-center justify-between">
               <span className="text-[16px] font-semibold text-[#333] font-karla leading-[1.4]">
@@ -164,12 +184,7 @@ function Dropdown<T>({
             </div>
           </button>
           <div
-            className={`
-              absolute left-0 z-10 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto min-w-[220px]
-              transition-all duration-200 ease-in-out origin-top
-              ${openDirection === 'up' ? 'bottom-full mb-1' : 'top-full mt-1'}
-              ${isOpen ? "opacity-100 scale-y-100 pointer-events-auto" : "opacity-0 scale-y-95 pointer-events-none"}
-            `}
+            className={dropdownClass}
             aria-hidden={!isOpen}
           >
             {((searchable && filteredOptions.length === 0) || (!searchable && options.length === 0)) && (

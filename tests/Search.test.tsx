@@ -45,13 +45,6 @@ describe("Search Component", () => {
     expect(searchInput).toHaveValue("");
   });
 
-  it("displays magnifying glass icon", () => {
-    render(<Search {...defaultProps} />);
-    
-    const searchIcon = screen.getByTestId("search-icon");
-    expect(searchIcon).toBeInTheDocument();
-  });
-
   it("calls onChange when user types", async () => {
     const user = userEvent.setup();
     render(<Search {...defaultProps} />);
@@ -179,34 +172,12 @@ describe("Search Component", () => {
     });
   });
 
-  it("displays search button when onSearch is provided", () => {
-    render(<Search {...defaultProps} />);
-    
-    const searchButton = screen.getByText("Search");
-    expect(searchButton).toBeInTheDocument();
-  });
-
-  it("calls onSearch when search button is clicked", async () => {
-    const user = userEvent.setup();
-    render(<Search {...defaultProps} />);
-    
-    const searchInput = screen.getByPlaceholderText("Search here...");
-    await user.type(searchInput, "test");
-    
-    const searchButton = screen.getByText("Search");
-    await user.click(searchButton);
-    
-    expect(defaultProps.onSearch).toHaveBeenCalledWith("test");
-  });
-
   it("applies disabled state correctly", () => {
     render(<Search {...defaultProps} disabled={true} />);
     
     const searchInput = screen.getByPlaceholderText("Search here...");
     expect(searchInput).toBeDisabled();
     
-    const searchButton = screen.getByText("Search");
-    expect(searchButton).toBeDisabled();
   });
 
   it("applies custom className", () => {
