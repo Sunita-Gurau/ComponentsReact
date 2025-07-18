@@ -1,8 +1,10 @@
 import React from 'react';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import Dropdown from './Dropdown';
+import '@testing-library/jest-dom';
+import Dropdown from '../src/components/Dropdown';
 import { useState } from 'react';
 
 type DropdownOption = {
@@ -34,7 +36,7 @@ const multiSelectProps = {
   getValue: (option: DropdownOption) => option.value,
   getCount: (option: DropdownOption) => option.count,
   multiSelect: true,
-  variant: 'simple',
+  variant: 'simple' as const,
 };
 
 // Helper wrapper for multiSelect stateful testing

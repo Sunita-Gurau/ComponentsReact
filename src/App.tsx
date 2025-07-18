@@ -2,6 +2,7 @@ import React from "react";
 import Card from "./components/Card";
 import ProgressBar from "./components/ProgressBar";
 import DropdownDemo from "./components/DropdownDemo";
+import SearchDemo from "./components/SearchDemo";
 
 const cardData = [
   {
@@ -114,6 +115,11 @@ export default function App() {
         {/* Dropdown Demo Section */}
         <div className="mt-12">
           <DropdownDemo />
+        </div>
+        
+        {/* Search Demo Section */}
+        <div className="mt-12">
+          <SearchDemo />
         </div>
       </div>
     </div>

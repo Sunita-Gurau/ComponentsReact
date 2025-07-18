@@ -112,9 +112,9 @@ const DropdownDemo: React.FC = () => {
             getLabel={option => option.label}
             getValue={option => option.key}
             getCount={option => option.count}
-            placeholder="Running Campaigns"
             showIcon={true}
             showCounts={true}
+            placeholder="All"
             variant="filter"
           />
         </div>

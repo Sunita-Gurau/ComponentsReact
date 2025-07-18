@@ -1,6 +1,8 @@
 import React from 'react';
+import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
-import ProgressBar from './ProgressBar';
+import '@testing-library/jest-dom';
+import ProgressBar from '../src/components/ProgressBar';
 
 describe('ProgressBar', () => {
   afterEach(() => cleanup());
